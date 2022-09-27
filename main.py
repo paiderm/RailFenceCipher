@@ -1,6 +1,38 @@
+'''
+    Since the message that is encrypted is the same length as the decrypted message, we can insert all the letters in the
+    indicies === 0 (mod 2(depth-1)), then === +/- 1, then +/- 2, ..., lastly depth-1
+'''
+def decryptMessage(message, depth):
+    decryptedMessage = ' ' * len(message)
+    mod = 2 * (int(depth) - 1)
+
+    counter = 0
+    for j in range(int(depth)):
+        for spot in range(len(decryptedMessage)):
+            if (spot % mod == j or spot % mod == mod - j):
+                decryptedMessage = replace_char_at_index(decryptedMessage, spot, message[counter])
+                counter += 1
+
+    return decryptedMessage
+
+'''
+    encryptMessage(message, depth) looks for all of the letters and indicies +/- i and puts into the encrypted message
+    encryptedMessage = [0] + [+/- 1] + [+/- 2] + ... + [depth - 1]
+'''
 def encryptMessage(message, depth):
     encryptedMessage = ''
-    firstMod = determineFirstRowMod(depth)
+    mod = 2*(int(depth) - 1)
+
+    for i in range(int(depth)):
+        for j in range(len(message)):
+            if j % mod == i or j % mod == mod - i:
+                encryptedMessage += message[j]
+
+    return encryptedMessage;
+
+def encryptMessageAlternate(message, depth):
+    encryptedMessage = ''
+    firstMod = 2*(int(depth) - 1)
     mod = firstMod
 
     for i in range(int(depth)):
@@ -50,10 +82,9 @@ def encryptDecryptMessage(choice, message, depth):
     output = ''
     if choice.upper() == 'E':
         output = encryptMessage(message, depth)
+    if choice.upper() == 'D':
+        output = decryptMessage(message, depth)
     return output
-
-def determineFirstRowMod(depth):
-    return 2*(int(depth) - 1)
 
 def isAlphabetic(string):
     for character in string:
@@ -74,25 +105,19 @@ def main():
                 while (not isAlphabetic(message)):
                     print("Invalid response!")
                     message = input("Enter the message to be encrypted: ").upper().replace(' ', '')
+                output = encryptMessage(message, key)
             if userChoice == 'D':
                 message = input("Enter the cypher text to decrypt: ").upper()
                 while (not isAlphabetic(message)):
                     print("Invalid response!")
                     message = input("Enter the cypher text to decrypt: ").upper()
+                output = decryptMessage(message, key)
             if userChoice == 'H':
                 message = input("Enter the message to hash: ").upper()
                 while (not isAlphabetic(message)):
                     print("Invalid response!")
                     message = input("Enter the message to hash: ").upper()
-            print(encryptDecryptMessage(userChoice, message, key))
-        elif userChoice == 'C':
-            message = input("Enter the message to be cracked: ").upper()
-            while (not isAlphabetic(message)):
-                print("Invalid response!")
-                message = input("Enter the message to be cracked: ").upper()
-            # figure out the key length
-                # make staggered 2D array
-
+            print(output)
         else:
             print("Invalid response!")
         userChoice = input(
@@ -100,5 +125,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
